@@ -8,7 +8,7 @@ base=https://prices.azure.com/api/retail/prices
 echo [ > $2
 cat $1 | while read s 
 do
-  q="\$filter=serviceName eq 'Virtual Machines' and armRegionName eq 'westus2' and armSkuName eq '$s' and priceType eq 'Consumption'"
+  q="\$filter=serviceName eq 'Virtual Machines' and armRegionName eq 'westus2' and armSkuName eq '$s' and priceType eq 'Consumption' and isPrimaryRegion eq 'True'"
   res=$(curl -Gs --data-urlencode "$q" $base | jq -r '.Items[] | select(.productName | test(".Series$"))')
   printf "${res},\n" >> results
 done
