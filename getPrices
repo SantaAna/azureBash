@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#First argument is the input file with the sizes that need to be looked up.
+#Second argument is the output file to write the pricing information to.
+#Script requires jq utility to be installed.
+
+base=https://prices.azure.com/api/retail/prices
+echo [ > $2
+cat $1 | while read s 
+do
+  q="\$filter=serviceName eq 'Virtual Machines' and armRegionName eq 'westus2' and armSkuName eq '$s' and priceType eq 'Consumption'"
+  res=$(curl -Gs --data-urlencode "$q" $base | jq -r '.Items[] | select(.productName | test(".Series$"))')
+  printf "${res},\n" >> results
+done
+
+sed -i '$ s/.$//' results
+
+echo ] >> $2
